@@ -1,7 +1,10 @@
 import React from 'react';
-import { Box } from '@material-ui/core';
+import { Box, Typography } from '@material-ui/core';
 
-const Square = () => {
+interface IProps {
+  value: string;
+}
+const Square: React.FC<IProps> = ({ value }) => {
   return (
     <Box
       width={100}
@@ -10,7 +13,9 @@ const Square = () => {
       display="flex"
       justifyContent="center"
       alignItems="center"
-    ></Box>
+    >
+      <Typography variant="h2">{value}</Typography>
+    </Box>
   );
 };
 

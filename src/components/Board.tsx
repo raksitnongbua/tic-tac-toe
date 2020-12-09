@@ -1,13 +1,16 @@
 import { Box } from '@material-ui/core';
 import React from 'react';
+import { createIndexArray } from '../services/utils';
 import Square from './Square';
 
-const Board = () => {
-  const gridSize = 3;
+interface IProps {
+  size: number;
+  boardData: string[];
+}
+const Board: React.FC<IProps> = ({ size, boardData }) => {
   return (
     <Box
-      width="100vw"
-      height="100vh"
+      width="100%"
       display="flex"
       justifyContent="center"
       alignItems="center"
@@ -15,10 +18,10 @@ const Board = () => {
       <Box
         display="grid"
         gridGap={1}
-        gridTemplateColumns={`repeat(${gridSize}, 1fr)`}
+        gridTemplateColumns={`repeat(${size}, 1fr)`}
       >
-        {Array.apply(null, new Array(gridSize * gridSize)).map((_, i) => (
-          <Square key={`square-${i}`} />
+        {createIndexArray(size * size).map((_, i) => (
+          <Square key={`square-${i}`} value={boardData[i]} />
         ))}
       </Box>
     </Box>
