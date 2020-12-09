@@ -22,6 +22,7 @@ const Game = () => {
   const [size, setSize] = useState(4);
   const [currentSize, setCurrentSize] = useState(4);
   const [comboWins, setComboWins] = useState<number[][]>([]);
+  const [turn, setTurn] = useState<string>('X');
   const [boardData, setBoardData] = useState<string[]>([]);
   useEffect(() => {
     setComboWins(getComboWins(currentSize));
@@ -35,6 +36,14 @@ const Game = () => {
     const value = Math.min(Math.max(size, minSize), maxSize);
     setCurrentSize(value);
     setSize(value);
+    setBoardData(clearBoardData(currentSize));
+  };
+  const handleSelect = (index: number) => {
+    const newBoardData = boardData.map((value, i) =>
+      i === index ? turn : value
+    );
+    setBoardData(newBoardData);
+    setTurn(turn === 'X' ? 'O' : 'X');
   };
   return (
     <Container maxWidth="md">
@@ -71,7 +80,11 @@ const Game = () => {
             </Button>
           </Box>
         </form>
-        <Board size={currentSize} boardData={boardData} />
+        <Board
+          size={currentSize}
+          boardData={boardData}
+          onSelect={handleSelect}
+        />
       </Box>
     </Container>
   );

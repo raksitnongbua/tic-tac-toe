@@ -30,7 +30,7 @@ const getComboWins = (size: number): number[][] => {
   ];
 };
 const clearBoardData = (size: number) => {
-  return createIndexArray(size * size).map((_, i) => (i % 2 === 0 ? 'X' : 'O'));
+  return createIndexArray(size * size).map((_) => '');
 };
 
 export { getComboWins, clearBoardData };

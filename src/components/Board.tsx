@@ -6,8 +6,9 @@ import Square from './Square';
 interface IProps {
   size: number;
   boardData: string[];
+  onSelect: (index: number) => void;
 }
-const Board: React.FC<IProps> = ({ size, boardData }) => {
+const Board: React.FC<IProps> = ({ size, boardData, onSelect }) => {
   return (
     <Box
       width="100%"
@@ -21,7 +22,11 @@ const Board: React.FC<IProps> = ({ size, boardData }) => {
         gridTemplateColumns={`repeat(${size}, 1fr)`}
       >
         {createIndexArray(size * size).map((_, i) => (
-          <Square key={`square-${i}`} value={boardData[i]} />
+          <Square
+            key={`square-${i}`}
+            value={boardData[i]}
+            onClick={() => onSelect(i)}
+          />
         ))}
       </Box>
     </Box>

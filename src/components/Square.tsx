@@ -1,10 +1,20 @@
 import React from 'react';
-import { Box, Typography } from '@material-ui/core';
+import { Box, makeStyles, Typography } from '@material-ui/core';
 
 interface IProps {
   value: string;
+  onClick: () => void;
 }
-const Square: React.FC<IProps> = ({ value }) => {
+const useStyles = makeStyles({
+  text: {
+    cursor: 'default',
+  },
+});
+const Square: React.FC<IProps> = ({ value, onClick }) => {
+  const { text } = useStyles();
+  const handleClick = () => {
+    if (value === '') onClick();
+  };
   return (
     <Box
       width={100}
@@ -13,8 +23,11 @@ const Square: React.FC<IProps> = ({ value }) => {
       display="flex"
       justifyContent="center"
       alignItems="center"
+      onClick={handleClick}
     >
-      <Typography variant="h2">{value}</Typography>
+      <Typography variant="h2" className={text}>
+        {value}
+      </Typography>
     </Box>
   );
 };
