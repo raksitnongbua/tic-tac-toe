@@ -32,5 +32,16 @@ const getComboWins = (size: number): number[][] => {
 const clearBoardData = (size: number) => {
   return createIndexArray(size * size).map((_) => '');
 };
-
-export { getComboWins, clearBoardData };
+const checkWonCombos = (
+  comboWins: number[][],
+  index: number,
+  targetValue: string,
+  boardData: string[]
+) => {
+  const involvedComboWins = comboWins.filter((v) => v.includes(index));
+  const wonCombos = involvedComboWins.filter((arr) =>
+    arr.every((item) => boardData[item] === targetValue)
+  );
+  return wonCombos;
+};
+export { getComboWins, clearBoardData, checkWonCombos };

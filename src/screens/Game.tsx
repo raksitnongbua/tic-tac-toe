@@ -1,85 +1,106 @@
-import {
-  Box,
-  Button,
-  Container,
-  makeStyles,
-  TextField,
-  Theme,
-} from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import { Box, Button, Container, Typography } from '@material-ui/core';
+import React, { useEffect, useRef, useState } from 'react';
 import Board from '../components/Board';
-import { clearBoardData, getComboWins } from '../services/game';
-const useStyles = makeStyles<Theme>((theme) => ({
-  textField: {
-    width: '60px',
-    margin: theme.spacing(1),
-  },
-}));
-const minSize = 2;
+import SizeEditor from '../components/SizeEditor';
+import { checkWonCombos, clearBoardData, getComboWins } from '../services/game';
+enum GameStates {
+  PLAYING,
+  X_WINNER,
+  O_WINNER,
+  DRAW,
+}
+const minSize = 3;
 const maxSize = 15;
 const Game = () => {
-  const { textField } = useStyles();
-  const [size, setSize] = useState(4);
   const [currentSize, setCurrentSize] = useState(4);
-  const [comboWins, setComboWins] = useState<number[][]>([]);
+  const comboWinsRef = useRef<number[][]>([]);
   const [turn, setTurn] = useState<string>('X');
   const [boardData, setBoardData] = useState<string[]>([]);
+  const [gameState, setGameState] = useState<GameStates>(GameStates.PLAYING);
   useEffect(() => {
-    setComboWins(getComboWins(currentSize));
+    comboWinsRef.current = getComboWins(currentSize);
     setBoardData(clearBoardData(currentSize));
   }, [currentSize]);
-  const handleSizeChange = (event: any) => {
-    setSize(parseInt(event.target.value) || 0);
-  };
-  const handleSubmit = (event: any) => {
-    event.preventDefault();
-    const value = Math.min(Math.max(size, minSize), maxSize);
+  const handleSubmit = (value: number) => {
     setCurrentSize(value);
-    setSize(value);
     setBoardData(clearBoardData(currentSize));
   };
-  const handleSelect = (index: number) => {
+  const checkWinner = (index: number) => {
     const newBoardData = boardData.map((value, i) =>
       i === index ? turn : value
     );
     setBoardData(newBoardData);
-    setTurn(turn === 'X' ? 'O' : 'X');
+    const wonCombos = checkWonCombos(
+      comboWinsRef.current,
+      index,
+      turn,
+      newBoardData
+    );
+    const gameOver = wonCombos.length > 0;
+    if (gameOver) {
+      setGameState(turn === 'X' ? GameStates.X_WINNER : GameStates.O_WINNER);
+    } else {
+      const isDraw = newBoardData.every((v) => v !== '');
+      if (isDraw) {
+        setGameState(GameStates.DRAW);
+      } else {
+        setTurn(turn === 'X' ? 'O' : 'X');
+      }
+    }
+  };
+  const handleSelect = (index: number) => {
+    if (gameState !== GameStates.PLAYING) return;
+    checkWinner(index);
+  };
+  const handleRestartGame = () => {
+    setBoardData(clearBoardData(currentSize));
+    setGameState(GameStates.PLAYING);
+  };
+  const getTextEndGame = (gameState: GameStates): string => {
+    switch (gameState) {
+      case GameStates.DRAW:
+        return 'DRAW!';
+      case GameStates.X_WINNER:
+        return `"X" is Winner!`;
+      case GameStates.O_WINNER:
+        return `"O" is Winner!`;
+      default:
+        return '';
+    }
   };
   return (
     <Container maxWidth="md">
       <Box p={2}>
-        <form onSubmit={handleSubmit}>
+        {gameState !== GameStates.PLAYING ? (
           <Box
             p={2}
             mb={2}
             display="flex"
             justifyContent="center"
             alignItems="center"
+            flexDirection="column"
+            height={100}
           >
-            <TextField
-              id="filled-number"
-              type="number"
-              className={textField}
-              inputProps={{ min: minSize, max: maxSize }}
-              variant="outlined"
-              value={size}
-              onChange={handleSizeChange}
-            />
-            X
-            <TextField
-              id="filled-number"
-              type="number"
-              className={textField}
-              inputProps={{ min: minSize, max: maxSize }}
-              variant="outlined"
-              value={size}
-              onChange={handleSizeChange}
-            />
-            <Button variant="contained" color="primary" type="submit">
-              Set
+            <Typography variant="h4">{getTextEndGame(gameState)}</Typography>
+            <Box my={1} />
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleRestartGame}
+            >
+              Restart
             </Button>
           </Box>
-        </form>
+        ) : (
+          <>
+            <SizeEditor
+              size={currentSize}
+              onSubmit={handleSubmit}
+              minSize={minSize}
+              maxSize={maxSize}
+            />
+          </>
+        )}
         <Board
           size={currentSize}
           boardData={boardData}
