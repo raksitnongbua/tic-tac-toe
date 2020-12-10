@@ -10,7 +10,7 @@ enum GameStates {
   DRAW,
 }
 const minSize = 3;
-const maxSize = 15;
+const maxSize = 25;
 const Game = () => {
   const [currentSize, setCurrentSize] = useState(4);
   const comboWinsRef = useRef<number[][]>([]);

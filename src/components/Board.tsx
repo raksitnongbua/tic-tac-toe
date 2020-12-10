@@ -9,6 +9,7 @@ interface IProps {
   onSelect: (index: number) => void;
 }
 const Board: React.FC<IProps> = ({ size, boardData, onSelect }) => {
+  const baseSize = 3;
   return (
     <Box
       width="100%"
@@ -26,6 +27,7 @@ const Board: React.FC<IProps> = ({ size, boardData, onSelect }) => {
             key={`square-${i}`}
             value={boardData[i]}
             onClick={() => onSelect(i)}
+            scale={baseSize / size}
           />
         ))}
       </Box>
